@@ -6,7 +6,7 @@ const readLine = require('readline').createInterface({
 });
 
 const waitForUsername = new Promise(resolve => {
-    readLine.question('Enter a username to join in the chat: ', res => {
+    readLine.question('Enter a username to join in the chat: ', (res) => {
         resolve(res);
     });
 });
@@ -14,10 +14,11 @@ const waitForUsername = new Promise(resolve => {
 waitForUsername.then((username) => {
 
     const socket = net.connect({
-        port: 3000
+        port: 3000,
+        host: "192.168.1.67"
     });
 
-    readLine.on('line', data => {
+     readLine.on('line', data => {
         if (data === 'quit') {
             socket.write(username+' has left the chat.');
             socket.setTimeout(1000);
@@ -26,12 +27,13 @@ waitForUsername.then((username) => {
         }
     });
 
+   
     socket.on('connect', () => {
         socket.write(username + ' has joined the chat.');
     });
 
     socket.on('data', data => {
-        console.log('\x1b[33m%s\x1b[0m', data); //\x1b[33m%s\x1b[0m : cambia el color de la terminal en nodeJS
+        console.log(data.toString().trim()+"\x1b[37m"); 
     });
 
     socket.on('timeout', () => {
